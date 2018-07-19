@@ -50,6 +50,9 @@ bundle exec convert.rb filename.pdf filename.csv
 
 Import into Xero and profit!
 
+![Screenshot](https://user-images.githubusercontent.com/251987/42947778-581c95bc-8b6e-11e8-9c8b-888d97e77b6d.png)
+
+
 ## Contributing
 
 1. Fork it
