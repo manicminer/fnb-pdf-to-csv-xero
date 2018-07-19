@@ -5,7 +5,7 @@ require 'csv'
 class FnbPdfToCsvXero
   attr_reader :lines
 
-  AMOUNT = '\(?[0-9][0-9, ]*\.[0-9]{2}\)?\s?(Cr)?'
+  AMOUNT = '\(?[0-9]+[, ]?[0-9]*\.[0-9]{2}\)?\s?(Cr)?'
   DATE   = '\d{2} \w{3}'
 
   def initialize file
@@ -26,35 +26,10 @@ class FnbPdfToCsvXero
   def output file, separator = ','
     f = File.new file, 'w'
     f.write [
-      'Date','Description1','Description2','Description3','Amount','Balance','Accrued Charges'
+      '*Date','*Amount','Payee','Description','Reference'
     ].to_csv(col_sep: separator)
 
     lines.each { |line| f.write clean_line(line).to_csv(col_sep: separator) }
-  end
-
-  def statement file
-    f = File.new file, 'w'
-    f.write "5,'Number','Date','Description1','Description2','Description3','Amount','Balance','Accrued Charges'\n"
-
-    count = 1
-    lines.each do |line|
-      f.write statement_line(line, count).join(',') + "\n"
-      count = count + 1
-    end
-  end
-
-  def statement_line line, count
-    sline = line.dup
-    sline.insert(0, 5)
-    sline.insert(1, count)
-    sline[2] = "'#{sline[2]}'"
-    sline[3] = '"' + sline[3] + '"' unless (sline[3].nil? or sline[3] == '')
-    sline[4] = '"' + sline[4] + '"' unless (sline[4].nil? or sline[4] == '')
-    sline[5] = '"' + sline[5] + '"' unless (sline[5].nil? or sline[5] == '')
-    sline[6] = clean_amount(sline[6])
-    sline[7] = clean_amount(sline[7])
-
-    sline
   end
 
   def parse_page page
@@ -84,19 +59,18 @@ class FnbPdfToCsvXero
   end
 
   def clean_line(line)
-    sline = line.dup
-    sline[0] = clean_date sline[0]
-    sline[4] = clean_amount sline[4]
-    sline[5] = clean_amount sline[5]
-    sline[6] = clean_amount sline[6]
-
-    sline
+    [
+      clean_date(line[0]),
+      clean_amount(line[4]),
+      line[3],
+      line[1],
+      line[2]
+    ]
   end
 
   def mangle_line! arr
     arr.delete_at 0
     arr.map! { |elm| elm.strip unless elm.nil? } # Cleanup
-
     arr.delete_at 3
     arr.delete_at 4
     arr.delete_at 5
