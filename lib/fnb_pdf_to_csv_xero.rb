@@ -1,8 +1,8 @@
-require 'fnb_pdf_to_csv/version'
+require 'fnb_pdf_to_csv_xero/version'
 require 'pdf-reader'
 require 'csv'
 
-class FnbPdfToCsv
+class FnbPdfToCsvXero
   attr_reader :lines
 
   AMOUNT = '\(?[0-9][0-9, ]*\.[0-9]{2}\)?\s?(Cr)?'
