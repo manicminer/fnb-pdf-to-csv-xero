@@ -1,6 +1,6 @@
-# FNB PDF Convert to CSV
+# FNB PDF Convert to CSV (for Xero statement import)
 
-This gem provides the ability to convert a PDF FNB statement to a CSV file or statement.
+This gem helps to convert [FNB][fnb] PDF statements to a CSV format suitable for import into [Xero][xero]
 
 ## Installation
 
@@ -18,33 +18,37 @@ Or install it yourself as:
 
 ## Usage
 
+Check that you have a recent version of Ruby installed (tested with 2.3.0) and Bundler.
+
+Create a `Gemfile`:
+
+```
+source 'https://rubygems.org'
+gem 'fnb_pdf_to_csv_xero', :git => 'https://github.com/manicminer/fnb-pdf-to-csv-xero'
+```
+
+Install the gem:
+```shell
+bundle
+```
+
+Create a straightforward script to convert:
+
 ```ruby
 #!/usr/bin/env ruby
-require 'thor'
-require 'fnb_pdf_to_csv'
 
-class Converter < Thor
-  desc 'csvfile source destination', 'Convert the PDF from source to destination. Destination will be a plain CSV file'
-  def csvfile(from, to)
-    parser = FnbPdfToCsv.parse from
-    parser.output to
-  end
+require 'fnb_pdf_to_csv_xero'
 
-  desc 'file source destination', 'Convert the PDF from source to destination. Destination will be a tabbed CSV file'
-  def file(from, to)
-    parser = FnbPdfToCsv.parse from
-    parser.output to, "\t"
-  end
-
-  desc 'statement source destination', 'Convert the PDF from source to destination. Destination will mimick a FNB statement'
-  def statement(from, to)
-    parser = FnbPdfToCsv.parse from
-    parser.statement to
-  end
-end
-
-Converter.start(ARGV)
+parser = FnbPdfToCsvXero.parse ARGV[0]
+parser.output ARGV[1]
 ```
+
+Save a PDF statement in the same directory and run the script:
+```shell
+bundle exec convert.rb filename.pdf filename.csv
+```
+
+Import into Xero and profit!
 
 ## Contributing
 
@@ -53,3 +57,12 @@ Converter.start(ARGV)
 3. Commit your changes (`git commit -am 'Add some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)
 5. Create new Pull Request
+
+## Credits
+
+This script largely taken from [fnb_pdf_to_csv][fnb_pdf_to_csv] by @jrgns, with only small modifications to change the output format and improve some pattern matching.
+
+
+[fnb]: https://www.fnb.co.za
+[xero]: https://www.xero.com
+[fnb_pdf_to_csv]: https://github.com/jrgns/fnb_pdf_to_csv
