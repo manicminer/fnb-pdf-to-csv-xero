@@ -11,6 +11,7 @@ class FnbPdfToCsvXero
   def initialize file
     @reader = ::PDF::Reader.new file
     @lines = []
+    @year = Time.new.year
   end
 
   def self.parse file
@@ -37,6 +38,9 @@ class FnbPdfToCsvXero
   end
 
   def parse_line line
+    line.match(/Statement Period *: .+ ([0-9]{4})/) do |m|
+      @year = m[1]
+    end
     line.match(/^\s*(#{DATE})(.*?)(#{AMOUNT})(\s+#{AMOUNT})?(\s+#{AMOUNT})?/) do |m|
       @lines.push mangle_line!(m.to_a)
     end
@@ -44,7 +48,7 @@ class FnbPdfToCsvXero
 
   def clean_date(date)
     day, month = date.split(/\s/)
-    Time.new(Time.new.year, month, day.to_i).strftime("%Y-%m-%d")
+    Time.new(@year, month, day.to_i).strftime("%Y-%m-%d")
   end
 
   def clean_amount(amount)
